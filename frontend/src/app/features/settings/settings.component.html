@@ -1,0 +1,31 @@
+<div class="settings-container">
+  <h2>Settings</h2>
+  <p style="color: var(--text-muted); margin-bottom: 2rem;">Configure your local Engram environment</p>
+
+  <div class="card">
+    <h3 style="margin-top: 0; margin-bottom: 1.5rem;">Database Path</h3>
+    
+    <div class="form-group">
+      <label for="dbPath" style="font-weight: 500;">SQLite DB Path (engram.db)</label>
+      <input 
+        id="dbPath" 
+        type="text" 
+        pInputText 
+        [(ngModel)]="dbPath" 
+        class="db-input p-inputtext-sm"
+        placeholder="/path/to/engram.db"
+      />
+      <small style="color: var(--text-muted)">The application will re-initialize connection to the new path automatically.</small>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;" *ngIf="successMessage">
+      <p-message severity="success">{{successMessage}}</p-message>
+    </div>
+    
+    <div style="margin-bottom: 1.5rem;" *ngIf="errorMessage">
+      <p-message severity="error">{{errorMessage}}</p-message>
+    </div>
+
+    <p-button label="Save Changes" icon="pi pi-check" (click)="saveSettings()"></p-button>
+  </div>
+</div>

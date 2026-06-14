@@ -1,0 +1,67 @@
+# Dependency Directories
+node_modules/
+**/node_modules/
+jspm_packages/
+web_modules/
+
+# Build and Output Files
+dist/
+**/dist/
+out/
+build/
+.angular/
+.nest/
+
+# IDEs and Editors
+.idea/
+.project
+.classpath
+.cproject
+.settings/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Icon?
+
+# Local Environment Variables and Secrets
+.env
+.env.local
+.env.*.local
+*.env
+*.env.*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# SQLite Database and configuration overrides
+.engram/
+*.db
+*.sqlite
+
+# Testing coverage
+coverage/
+**/coverage/
+.nyc_output/
+
+# Temporary and cache
+.cache/
+.npm/
+.eslintcache
+.parcel-cache
+.turbo/

@@ -1,0 +1,24 @@
+{
+  "name": "engram-ui",
+  "version": "1.0.0",
+  "description": "Local-First Web App & CLI for Engram AI Sessions",
+  "main": "index.js",
+  "bin": {
+    "engram-ui": "./bin/cli.js"
+  },
+  "scripts": {
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "copy:public": "mkdir -p backend/public && cp -r frontend/dist/frontend/browser/* backend/public/",
+    "build:all": "npm run build:frontend && npm run copy:public && npm run build:backend",
+    "start:dev": "node bin/dev.js",
+    "start:prod": "npm run build:all && node backend/dist/main",
+    "start": "node backend/dist/main"
+  },
+  "dependencies": {
+    "open": "^10.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

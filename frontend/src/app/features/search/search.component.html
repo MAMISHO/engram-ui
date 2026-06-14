@@ -1,0 +1,70 @@
+<div class="h-full flex flex-col p-6" style="height: 100vh; box-sizing: border-box;">
+  <!-- Header & Search Input -->
+  <div style="margin-bottom: 1.5rem; flex-shrink: 0;">
+    <h2 style="margin: 0 0 1rem 0;">Search FTS5</h2>
+    <div style="position: relative;">
+      <input 
+        id="searchInput"
+        type="text" 
+        pInputText
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Search sessions (Ctrl+K)..."
+        style="width: 100%; box-sizing: border-box; padding-left: 2.5rem;"
+      >
+      <i class="pi pi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+      <div *ngIf="isLoading$ | async" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);">
+        <i class="pi pi-spin pi-spinner" style="color: var(--accent-color);"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Split View -->
+  <div class="split-view" style="flex: 1; overflow: hidden; margin-bottom: 2rem;">
+    <!-- Results List (Virtual Scrolling) -->
+    <div class="split-left">
+      <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background-color: var(--bg-color); font-weight: 600; font-size: 0.875rem; color: var(--text-muted); text-transform: uppercase;">
+        Results
+      </div>
+      <cdk-virtual-scroll-viewport itemSize="80" style="flex: 1; height: 100%;">
+        <div *cdkVirtualFor="let result of results$ | async" 
+             (click)="selectSession(result)"
+             style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s;"
+             [style.background-color]="selectedSession === result ? 'var(--border-color)' : 'transparent'"
+             onmouseover="this.style.backgroundColor='var(--border-color)'"
+             onmouseout="if(this.getAttribute('data-selected') !== 'true') this.style.backgroundColor='transparent'"
+             [attr.data-selected]="selectedSession === result">
+          <div style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ result?.title || 'Session Result' }}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ result?.content || '...' }}</div>
+        </div>
+        <!-- Empty State -->
+        <div *ngIf="(results$ | async)?.length === 0" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+          No results found. Start typing to search.
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+
+    <!-- Detail View (Markdown) -->
+    <div class="split-right">
+      <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background-color: var(--bg-color); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 600; font-size: 0.875rem; color: var(--text-muted); text-transform: uppercase;">Session Details</span>
+        <span style="font-size: 0.75rem; background-color: rgba(56, 189, 248, 0.2); color: var(--accent-color); padding: 0.25rem 0.5rem; border-radius: 4px;" *ngIf="selectedSession">
+          {{ selectedSession.createdAt | date:'short' }}
+        </span>
+      </div>
+      <div style="flex: 1; overflow-y: auto; padding: 1rem;">
+        <div *ngIf="selectedSession; else noSelection">
+           <app-markdown-viewer [content]="selectedSession.content || '# No Content\n\nNo content available for this session.'"></app-markdown-viewer>
+        </div>
+        <ng-template #noSelection>
+          <div style="display: flex; height: 100%; align-items: center; justify-content: center; color: var(--text-muted);">
+            <div style="text-align: center;">
+              <i class="pi pi-file" style="font-size: 3rem; color: var(--border-color); margin-bottom: 1rem;"></i>
+              <p>Select a session to view details</p>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

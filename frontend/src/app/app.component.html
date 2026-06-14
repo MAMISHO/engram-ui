@@ -1,0 +1,32 @@
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">ENGRAM UI</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Local-First Sessions</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <i class="pi pi-home" style="margin-right: 0.5rem;"></i> Dashboard
+      </a>
+      <a routerLink="/projects" routerLinkActive="active">
+        <i class="pi pi-folder" style="margin-right: 0.5rem;"></i> Projects
+      </a>
+      <a routerLink="/search" routerLinkActive="active" style="display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="pi pi-search" style="margin-right: 0.5rem;"></i> Search FTS5</span>
+        <kbd style="padding: 0.1rem 0.3rem; font-size: 0.75rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-muted);">Ctrl K</kbd>
+      </a>
+      <a routerLink="/settings" routerLinkActive="active">
+        <i class="pi pi-cog" style="margin-right: 0.5rem;"></i> Settings
+      </a>
+    </nav>
+    <div style="padding: 1rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+      v1.0.0-local
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

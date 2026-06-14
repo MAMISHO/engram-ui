@@ -1,0 +1,7 @@
+/* Ensure dark theme applies to ngx-charts */
+:host ::ng-deep .ngx-charts text {
+  fill: #94a3b8 !important; /* text-slate-400 */
+}
+:host ::ng-deep .ngx-charts .gridline-path {
+  stroke: #334155 !important; /* border-dark-border */
+}

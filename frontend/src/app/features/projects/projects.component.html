@@ -1,0 +1,209 @@
+<div class="projects-container">
+  <!-- Sidebar Project List -->
+  <div class="projects-sidebar">
+    <div class="projects-sidebar-header">
+      <h3 style="margin: 0; color: var(--accent-color); font-weight: 700; font-size: 1.1rem;">
+        <i class="pi pi-folder-open" style="margin-right: 0.5rem;"></i>Projects
+      </h3>
+      <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: var(--text-muted);">
+        Select a project to inspect
+      </p>
+    </div>
+    
+    <div class="projects-list">
+      <div 
+        *ngFor="let p of projects" 
+        class="project-item" 
+        [class.active]="selectedProjectName === p.project"
+        (click)="selectProject(p.project)"
+      >
+        <div>
+          <div class="project-name">{{ p.project }}</div>
+          <div class="project-path" [title]="p.workspacePath">{{ p.workspacePath }}</div>
+        </div>
+        <span class="p-badge p-badge-info" style="background-color: var(--border-color); color: var(--text-color);">
+          {{ p.sessionCount }}
+        </span>
+      </div>
+      
+      <div *ngIf="projects.length === 0" style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
+        No projects found.
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Projects Viewer -->
+  <div class="projects-content">
+    <div *ngIf="selectedProjectName; else welcome" style="display: flex; flex-direction: column; height: 100%;">
+      
+      <!-- Project Header -->
+      <div class="project-header">
+        <h2 style="margin: 0; font-size: 1.75rem; font-weight: 800; color: var(--text-color);">
+          {{ selectedProjectName }}
+        </h2>
+        <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--text-muted); font-family: monospace;">
+          <i class="pi pi-link" style="font-size: 0.75rem; margin-right: 0.25rem;"></i>{{ selectedProject?.workspacePath }}
+        </p>
+      </div>
+
+      <!-- KPI Statistics Grid -->
+      <div class="stats-grid">
+        <div class="mini-card">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Total Sessions</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: var(--accent-color); margin-top: 0.25rem;">{{ details?.sessionCount || 0 }}</div>
+          </div>
+          <i class="pi pi-calendar-times" style="font-size: 1.5rem; color: var(--accent-color); opacity: 0.8;"></i>
+        </div>
+        <div class="mini-card">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Total Memories</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #a855f7; margin-top: 0.25rem;">{{ details?.observationCount || 0 }}</div>
+          </div>
+          <i class="pi pi-bookmark" style="font-size: 1.5rem; color: #a855f7; opacity: 0.8;"></i>
+        </div>
+        <div class="mini-card">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Last Active</div>
+            <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-top: 0.5rem;">
+              {{ selectedProject?.createdAt | date:'short' }}
+            </div>
+          </div>
+          <i class="pi pi-clock" style="font-size: 1.5rem; color: var(--text-muted); opacity: 0.8;"></i>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div style="position: relative; flex: 1; min-width: 200px;">
+          <input 
+            type="text" 
+            pInputText 
+            [(ngModel)]="filterQuery" 
+            (ngModelChange)="applyLocalFilters()"
+            placeholder="Search within project..." 
+            style="width: 100%; padding-left: 2rem; box-sizing: border-box;"
+          />
+          <i class="pi pi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+        </div>
+        
+        <p-dropdown 
+          [options]="typeOptions" 
+          [(ngModel)]="selectedTypeFilter" 
+          (onChange)="applyLocalFilters()"
+          placeholder="Filter by Type"
+          [style]="{'min-width': '150px'}"
+        ></p-dropdown>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <input 
+            type="text" 
+            pInputText 
+            [(ngModel)]="newFilterName" 
+            placeholder="Saved filter name..." 
+            style="max-width: 150px;"
+            *ngIf="filterQuery || selectedTypeFilter"
+          />
+          <button 
+            pButton 
+            type="button" 
+            label="Save Filter" 
+            icon="pi pi-save" 
+            class="p-button-outlined p-button-sm"
+            (click)="saveFilter()"
+            *ngIf="filterQuery || selectedTypeFilter"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Saved Filters Display -->
+      <div class="saved-filters-container" *ngIf="savedFilters.length > 0">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Saved:</span>
+        <div 
+          *ngFor="let sf of savedFilters" 
+          class="filter-badge"
+          (click)="applySavedFilter(sf)"
+        >
+          <span>{{ sf.name }}</span>
+          <i class="pi pi-times-circle" (click)="deleteSavedFilter($event, sf.id)" style="font-size: 0.8rem; cursor: pointer; color: var(--text-muted);"></i>
+        </div>
+      </div>
+
+      <!-- Tabbed Views (Sessions, Memories, Stats) -->
+      <p-tabView class="custom-tab-view">
+        
+        <!-- Sessions Tab -->
+        <p-tabPanel header="Sessions ({{ filteredSessions.length }})">
+          <div style="max-height: 400px; overflow-y: auto;">
+            <div *ngFor="let s of filteredSessions" class="session-list-item" (click)="toggleSessionExpand(s.id)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: var(--accent-color); font-family: monospace;">{{ s.id }}</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Started: {{ s.startedAt | date:'medium' }}</span>
+              </div>
+              <div style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--text-color); font-weight: 500;">
+                {{ s.summary || 'No summary available' }}
+              </div>
+              <!-- Expandable Session Details -->
+              <div *ngIf="expandedSessionId === s.id" style="margin-top: 1rem; padding: 1rem; background-color: rgba(255,255,255,0.02); border-left: 3px solid var(--accent-color); border-radius: 4px;">
+                <app-markdown-viewer [content]="s.summary || '# No Summary'"></app-markdown-viewer>
+                <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+                  <strong>Workspace Directory:</strong> {{ s.directory }}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="filteredSessions.length === 0" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+              No sessions match the current filter.
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Memories Tab -->
+        <p-tabPanel header="Memories ({{ filteredObservations.length }})">
+          <div style="max-height: 400px; overflow-y: auto;">
+            <div *ngFor="let obs of filteredObservations" class="memory-item">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span class="type-badge" [ngClass]="'type-' + (obs.type || 'other')">{{ obs.type }}</span>
+                  <span style="font-weight: 600; color: var(--text-color);">{{ obs.title }}</span>
+                </div>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">{{ obs.createdAt | date:'medium' }}</span>
+              </div>
+              
+              <div style="margin-top: 0.5rem; padding: 0.75rem; background-color: rgba(0,0,0,0.1); border-radius: 4px; overflow-x: auto;">
+                <app-markdown-viewer [content]="obs.content"></app-markdown-viewer>
+              </div>
+            </div>
+            
+            <div *ngIf="filteredObservations.length === 0" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+              No memories/observations found matching the filter.
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Stats Tab -->
+        <p-tabPanel header="Project Analytics">
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
+            <h4 style="margin-top: 0; color: var(--text-color);">Memory Type Distribution</h4>
+            <div style="width: 300px; height: 250px;" *ngIf="pieData; else noChart">
+              <p-chart type="doughnut" [data]="pieData" [options]="pieOptions"></p-chart>
+            </div>
+            <ng-template #noChart>
+              <div style="color: var(--text-muted); padding: 2rem;">No analytics data available for this project.</div>
+            </ng-template>
+          </div>
+        </p-tabPanel>
+
+      </p-tabView>
+    </div>
+    
+    <ng-template #welcome>
+      <div class="welcome-screen">
+        <i class="pi pi-folder" style="font-size: 4rem; color: var(--border-color); margin-bottom: 1.5rem;"></i>
+        <h2>Welcome to the Projects Explorer</h2>
+        <p style="max-width: 400px; line-height: 1.5;">
+          Select a project from the left sidebar to view active coding sessions, saved telemetry, and persistent agent observations.
+        </p>
+      </div>
+    </ng-template>
+  </div>
+</div>

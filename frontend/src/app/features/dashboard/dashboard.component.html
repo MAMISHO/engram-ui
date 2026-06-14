@@ -1,0 +1,45 @@
+<div class="h-full overflow-y-auto p-6">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-2">Telemetry Dashboard</h2>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">Overview of your local AI agent activity</p>
+  </div>
+
+  <div *ngIf="stats; else loading" style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Top KPI Cards -->
+    <div class="dashboard-grid">
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <p style="font-size: 0.875rem; color: var(--text-muted); font-weight: 500; margin: 0; text-transform: uppercase;">Total Sessions</p>
+          <p style="font-size: 2rem; font-weight: bold; color: var(--accent-color); margin-top: 0.5rem; margin-bottom: 0;">{{ stats.totalSessions }}</p>
+        </div>
+        <div style="padding: 0.75rem; background-color: rgba(56, 189, 248, 0.1); border-radius: 0.5rem; color: var(--accent-color);">
+          <i class="pi pi-database" style="font-size: 1.5rem;"></i>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      <!-- Top Tags Chart -->
+      <div class="card">
+        <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Top Tags</h3>
+        <div style="display: flex; justify-content: center;">
+          <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" width="300px" height="250px"></p-chart>
+        </div>
+      </div>
+
+      <!-- Activity Chart -->
+      <div class="card">
+        <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Activity Timeline</h3>
+        <div>
+          <p-chart type="bar" [data]="barData" [options]="chartOptions" height="250px"></p-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div style="display: flex; align-items: center; justify-content: center; height: 250px;">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: var(--accent-color)"></i>
+    </div>
+  </ng-template>
+</div>
